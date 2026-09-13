@@ -1,15 +1,87 @@
 <!DOCTYPE html>
-<html>
-<head><title>Login To-Do</title></head>
-<body>
-    <h2>Login</h2>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}<p style="color:red;">{{ messages[0] }}</p>{% endif %}
-    {% endwith %}
-    <form method="POST">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TaskMaster</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4 text-gray-800">
+
+    <!-- Card Container -->
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        
+        <!-- Header Banner Hijau -->
+        <div class="bg-[#4a9f60] p-8 text-center relative overflow-hidden">
+            <div class="relative z-10 flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center text-[#4a9f60] shadow-md mb-3 text-2xl">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white tracking-wide">TaskMaster</h1>
+                <p class="text-green-50 text-sm mt-1 opacity-90">Asisten Harian Pintar Anda</p>
+            </div>
+            <!-- Dekorasi Daun Transparan -->
+            <div class="absolute -bottom-12 -right-6 opacity-20 pointer-events-none text-white">
+                <i class="fas fa-leaf text-[8rem]"></i>
+            </div>
+        </div>
+
+        <!-- Area Form -->
+        <div class="p-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-6 text-center">Masuk ke Akun</h2>
+            
+            <!-- Notifikasi Error (Jinja2 Flask) -->
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              <div class="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-xl flex items-center gap-3">
+                  <i class="fas fa-exclamation-circle text-lg"></i>
+                  <span>{{ messages[0] }}</span>
+              </div>
+              {% endif %}
+            {% endwith %}
+
+            <!-- Form Login -->
+            <form method="POST" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1.5 ml-1">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400 text-sm"></i>
+                        </div>
+                        <input type="text" name="username" placeholder="Masukkan username" required 
+                               class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:bg-white text-sm transition-all">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1.5 ml-1">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400 text-sm"></i>
+                        </div>
+                        <input type="password" name="password" placeholder="Masukkan password" required 
+                               class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:bg-white text-sm transition-all">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3.5 rounded-xl transition-all shadow-md mt-4 flex justify-center items-center gap-2 active:scale-[0.98]">
+                    <span>Masuk Aplikasi</span> <i class="fas fa-sign-in-alt text-sm"></i>
+                </button>
+            </form>
+            
+            <div class="mt-8 text-center">
+                <p class="text-xs text-gray-400 font-medium">TaskMaster v1.0 &copy; 2026</p>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
