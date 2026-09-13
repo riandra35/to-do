@@ -1,37 +1,153 @@
 <!DOCTYPE html>
-<html>
-<head><title>To-Do Checklist</title></head>
-<body>
-    <h2>Checklist Harian</h2>
-    <a href="/logout">Logout</a>
-    <hr>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do Checklist</title>
+    <!-- Tailwind CSS untuk styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk ikon-ikon cantik -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
 
-    <!-- Form Filter Tanggal -->
-    <form method="GET" style="margin-bottom: 20px;">
-        <label>Filter Tanggal:</label>
-        <input type="date" name="date" value="{{ filter_date }}">
-        <button type="submit">Filter</button>
-        <a href="/">Reset</a>
-    </form>
+    <!-- SIDEBAR KIRI (Berdasarkan referensi) -->
+    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col justify-between p-6 shadow-sm">
+        <div>
+            <!-- Logo Brand -->
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white font-bold shadow-md">
+                    <i class="fas fa-check-double text-sm"></i>
+                </div>
+                <span class="font-bold text-xl">TaskMaster</span>
+            </div>
+            
+            <!-- Menu Navigasi -->
+            <nav class="space-y-2">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-xl font-medium transition">
+                    <i class="fas fa-list-ul"></i> Daftar Tugas
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:bg-gray-50 rounded-xl font-medium transition">
+                    <i class="fas fa-chart-line"></i> Rapor Bulanan
+                </a>
+            </nav>
+        </div>
 
-    <!-- Form Tambah Tugas -->
-    <form action="/add" method="POST">
-        <input type="text" name="task" placeholder="Tugas baru..." required>
-        <input type="date" name="date" required>
-        <button type="submit">Tambah</button>
-    </form>
+        <!-- Akun & Pengaturan (Bawah) -->
+        <div class="mt-auto pt-6 border-t border-gray-100">
+            <div class="text-[10px] font-bold text-gray-400 mb-4 tracking-widest uppercase">Akun & Pengaturan</div>
+            
+            <!-- Profil User -->
+            <div class="flex items-center gap-3 px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl mb-4">
+                <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold text-sm">Z</div>
+                <div class="flex flex-col">
+                    <span class="text-sm font-semibold">Zul Indra</span>
+                    <span class="text-[10px] text-gray-500">Administrator</span>
+                </div>
+            </div>
 
-    <!-- Daftar Tugas -->
-    <ul>
-        {% for task in tasks %}
-        <li>
-            <span style="text-decoration: {{ 'line-through' if task.completed else 'none' }}">
-                {{ task.date }} - {{ task.task }}
-            </span>
-            <a href="/toggle/{{ task.id }}">[ {{ 'Batal Selesai' if task.completed else 'Selesai' }} ]</a>
-            <a href="/delete/{{ task.id }}" style="color: red;">[ Hapus ]</a>
-        </li>
-        {% endfor %}
-    </ul>
+            <!-- Tombol Logout -->
+            <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 rounded-xl transition text-sm font-medium">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- KONTEN UTAMA KANAN -->
+    <main class="flex-1 overflow-y-auto p-8 md:p-10">
+        
+        <!-- Banner Hijau ala Zhenqi -->
+        <div class="bg-[#4a9f60] rounded-3xl p-8 md:p-10 text-white mb-8 relative overflow-hidden shadow-lg">
+            <div class="relative z-10 md:w-3/4">
+                <h1 class="text-3xl font-bold mb-3">Halo, Selamat Datang! 👋</h1>
+                <p class="text-green-50 text-sm leading-relaxed mb-6 opacity-90">
+                    Aplikasi Checklist Harian Pintar Anda. Kami siap membantu merancang jadwal rutin, memantau tugas harian, dan melacak progres produktivitas dengan akurat.
+                </p>
+                <button class="bg-white text-[#4a9f60] px-5 py-2.5 rounded-lg font-semibold text-sm shadow-sm hover:bg-gray-50 transition flex items-center gap-2">
+                    <i class="fas fa-download"></i> Unduh Rekap Data
+                </button>
+            </div>
+            <!-- Elemen dekorasi daun di background banner -->
+            <div class="absolute -bottom-16 -right-10 opacity-20 pointer-events-none">
+                <i class="fas fa-leaf text-[15rem]"></i>
+            </div>
+        </div>
+
+        <h2 class="font-bold text-lg mb-4 text-gray-800">Kelola Layanan Hari Ini</h2>
+
+        <!-- Panel Kontrol (Filter & Form Tambah) -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col xl:flex-row gap-6 items-center justify-between">
+            
+            <!-- Form Tambah Tugas -->
+            <form action="/add" method="POST" class="flex flex-1 w-full gap-3">
+                <input type="text" name="task" placeholder="Ketik tugas baru disini..." required 
+                       class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 text-sm">
+                <input type="date" name="date" required 
+                       class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 text-sm text-gray-600">
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-xl transition font-medium shadow-sm">
+                    Tambah
+                </button>
+            </form>
+
+            <div class="h-10 w-px bg-gray-200 hidden xl:block"></div>
+
+            <!-- Form Filter Tanggal -->
+            <form method="GET" class="flex gap-2 items-center w-full xl:w-auto">
+                <span class="text-sm text-gray-500 hidden md:inline-block">Filter:</span>
+                <input type="date" name="date" value="{{ filter_date }}" 
+                       class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-xl text-sm transition shadow-sm">Cari</button>
+                {% if filter_date %}
+                <a href="/" class="text-gray-400 hover:text-red-500 text-sm ml-1 underline transition">Reset</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Daftar Checklist -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            {% if tasks %}
+            <ul class="divide-y divide-gray-100">
+                {% for task in tasks %}
+                <li class="p-5 flex items-center justify-between hover:bg-gray-50 transition group">
+                    <div class="flex items-center gap-4">
+                        <!-- Tombol Checklist -->
+                        <a href="/toggle/{{ task.id }}" class="text-2xl transition-transform active:scale-90 {% if task.completed %}text-green-500{% else %}text-gray-200 hover:text-green-400{% endif %}">
+                            <i class="fa-{% if task.completed %}solid fa-circle-check{% else %}regular fa-circle{% endif %}"></i>
+                        </a>
+                        <!-- Detail Tugas -->
+                        <div class="flex flex-col">
+                            <span class="font-medium text-sm md:text-base {% if task.completed %}text-gray-400 line-through{% else %}text-gray-700{% endif %}">
+                                {{ task.task }}
+                            </span>
+                            <span class="text-[11px] text-gray-400 font-medium mt-0.5">
+                                <i class="far fa-calendar-alt mr-1"></i> {{ task.date }}
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Tombol Hapus (Muncul saat di-hover) -->
+                    <a href="/delete/{{ task.id }}" class="text-gray-300 hover:text-red-500 bg-white hover:bg-red-50 p-2 rounded-lg transition opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <!-- Kondisi Kosong (Empty State) -->
+            <div class="p-16 text-center text-gray-400 flex flex-col items-center">
+                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 text-2xl">
+                    <i class="fas fa-clipboard-list text-gray-300"></i>
+                </div>
+                <p class="font-medium text-gray-500">Belum ada tugas.</p>
+                <p class="text-sm mt-1">Tambahkan tugas baru untuk mulai melacak produktivitasmu!</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
 </body>
 </html>
