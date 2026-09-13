@@ -1,1 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><title>To-Do Checklist</title></head>
+<body>
+    <h2>Checklist Harian</h2>
+    <a href="/logout">Logout</a>
+    <hr>
 
+    <!-- Form Filter Tanggal -->
+    <form method="GET" style="margin-bottom: 20px;">
+        <label>Filter Tanggal:</label>
+        <input type="date" name="date" value="{{ filter_date }}">
+        <button type="submit">Filter</button>
+        <a href="/">Reset</a>
+    </form>
+
+    <!-- Form Tambah Tugas -->
+    <form action="/add" method="POST">
+        <input type="text" name="task" placeholder="Tugas baru..." required>
+        <input type="date" name="date" required>
+        <button type="submit">Tambah</button>
+    </form>
+
+    <!-- Daftar Tugas -->
+    <ul>
+        {% for task in tasks %}
+        <li>
+            <span style="text-decoration: {{ 'line-through' if task.completed else 'none' }}">
+                {{ task.date }} - {{ task.task }}
+            </span>
+            <a href="/toggle/{{ task.id }}">[ {{ 'Batal Selesai' if task.completed else 'Selesai' }} ]</a>
+            <a href="/delete/{{ task.id }}" style="color: red;">[ Hapus ]</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
