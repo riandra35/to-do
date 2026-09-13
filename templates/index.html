@@ -19,9 +19,18 @@
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800 w-full relative">
 
     <!-- OVERLAY LOADING SPINNER -->
-    <div id="loader" class="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 hidden flex-col items-center justify-center transition-opacity">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4 shadow-lg"></div>
-        <p class="text-gray-600 font-semibold animate-pulse">Memproses data...</p>
+    <div id="loader" class="fixed inset-0 bg-white/80 backdrop-blur-md z-[9999] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-300 ease-in-out">
+        <div class="relative flex justify-center items-center">
+            <!-- Lingkaran luar yang berputar -->
+            <div class="absolute animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-green-500 shadow-lg"></div>
+            <!-- Lingkaran dalam yang berputar berlawanan -->
+            <div class="absolute animate-spin rounded-full h-16 w-16 border-r-4 border-l-4 border-orange-400" style="animation-direction: reverse;"></div>
+            <!-- Ikon daun di tengah yang memantul -->
+            <div class="animate-bounce text-green-600 text-3xl mt-2">
+                <i class="fas fa-leaf"></i>
+            </div>
+        </div>
+        <p class="text-green-700 font-bold mt-8 animate-pulse tracking-wide text-lg">Memproses Data...</p>
     </div>
 
     <!-- OVERLAY SIDEBAR MOBILE -->
@@ -104,7 +113,6 @@
             <!-- Panel Kontrol -->
             <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col xl:flex-row gap-4 xl:gap-6 items-start xl:items-center justify-between">
                 
-                <!-- Tambah id="add-task-form" disini -->
                 <form id="add-task-form" action="/add" method="POST" class="flex flex-col sm:flex-row flex-1 w-full gap-3">
                     <input type="text" name="task" id="task-input" placeholder="Ketik tugas baru disini..." required 
                            class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 text-sm">
@@ -141,7 +149,6 @@
                     {% for task in tasks %}
                     <li class="p-4 md:p-5 flex items-center justify-between hover:bg-gray-50 transition group">
                         <div class="flex items-center gap-3 md:gap-4 pr-3">
-                            <!-- Tambah class async-action -->
                             <a href="/toggle/{{ task.id }}" class="async-action text-xl md:text-2xl transition-transform active:scale-90 flex-shrink-0 {% if task.completed %}text-green-500{% else %}text-gray-200 hover:text-green-400{% endif %}">
                                 <i class="fa-{% if task.completed %}solid fa-circle-check{% else %}regular fa-circle{% endif %}"></i>
                             </a>
@@ -154,7 +161,6 @@
                                 </span>
                             </div>
                         </div>
-                        <!-- Tambah class async-action dan action-delete -->
                         <a href="/delete/{{ task.id }}" class="async-action action-delete text-gray-300 hover:text-red-500 bg-white hover:bg-red-50 p-2 md:p-2 rounded-lg transition opacity-100 md:opacity-0 md:group-hover:opacity-100 flex-shrink-0">
                             <i class="fas fa-trash text-sm md:text-base pointer-events-none"></i>
                         </a>
@@ -200,13 +206,18 @@
             }
         });
 
-        // 3. Loader Logic
+        // 3. Loader Logic (Diperbarui untuk animasi halus)
         const loader = document.getElementById('loader');
-        const showLoader = () => loader.classList.remove('hidden', 'opacity-0');
-        const hideLoader = () => loader.classList.add('hidden');
+        const showLoader = () => {
+            loader.classList.remove('opacity-0', 'pointer-events-none');
+            loader.classList.add('opacity-100', 'pointer-events-auto');
+        };
+        const hideLoader = () => {
+            loader.classList.remove('opacity-100', 'pointer-events-auto');
+            loader.classList.add('opacity-0', 'pointer-events-none');
+        };
 
         // 4. Update UI Function (DOM Replacement Trik)
-        // Fungsi ini mengambil HTML yang baru dari respon, mengekstrak div list tugas, lalu menukarnya
         async function refreshTaskList(response, successMsg) {
             const htmlText = await response.text();
             const parser = new DOMParser();
@@ -230,10 +241,9 @@
             
             const formData = new FormData(e.target);
             try {
-                // Fetch otomatis mengikuti redirect Flask dan mengambil halaman root ('/')
                 const response = await fetch(e.target.action, { method: 'POST', body: formData });
                 await refreshTaskList(response, 'Tugas baru berhasil ditambahkan!');
-                document.getElementById('task-input').value = ''; // Kosongkan input
+                document.getElementById('task-input').value = ''; 
             } catch (error) {
                 Swal.fire('Error', 'Gagal menyambung ke server.', 'error');
             } finally {
@@ -243,7 +253,6 @@
 
         // 6. Intercept Toggle & Delete actions
         document.addEventListener('click', async (e) => {
-            // Cek apakah yang diklik adalah link action (toggle/hapus)
             const actionLink = e.target.closest('.async-action');
             if (!actionLink) return;
             
@@ -251,7 +260,6 @@
             const url = actionLink.getAttribute('href');
             const isDelete = actionLink.classList.contains('action-delete');
 
-            // Konfirmasi khusus untuk Hapus
             if (isDelete) {
                 const result = await Swal.fire({
                     title: 'Hapus Tugas?',
