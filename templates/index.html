@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do Checklist</title>
-    <!-- Tailwind CSS untuk styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome untuk ikon-ikon cantik -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Google Fonts: Inter -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -16,18 +18,22 @@
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800 w-full relative">
 
-    <!-- OVERLAY (Latar belakang gelap saat menu mobile terbuka) -->
+    <!-- OVERLAY LOADING SPINNER -->
+    <div id="loader" class="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 hidden flex-col items-center justify-center transition-opacity">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 mb-4 shadow-lg"></div>
+        <p class="text-gray-600 font-semibold animate-pulse">Memproses data...</p>
+    </div>
+
+    <!-- OVERLAY SIDEBAR MOBILE -->
     <div id="overlay" class="fixed inset-0 bg-black/50 z-20 hidden transition-opacity md:hidden"></div>
 
-    <!-- SIDEBAR KIRI (Drawer di Mobile, Tetap di Desktop) -->
+    <!-- SIDEBAR KIRI -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-100 flex flex-col justify-between p-6 shadow-2xl md:shadow-sm transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out">
         <div>
-            <!-- Tombol Tutup Sidebar (Hanya di Mobile) -->
             <button id="closeMenuBtn" class="md:hidden absolute top-6 right-6 text-gray-400 hover:text-red-500 focus:outline-none">
                 <i class="fas fa-times text-xl"></i>
             </button>
 
-            <!-- Logo Brand -->
             <div class="flex items-center gap-3 mb-10">
                 <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white font-bold shadow-md">
                     <i class="fas fa-check-double text-sm"></i>
@@ -35,7 +41,6 @@
                 <span class="font-bold text-xl">TaskMaster</span>
             </div>
             
-            <!-- Menu Navigasi -->
             <nav class="space-y-2">
                 <a href="/" class="flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-xl font-medium transition">
                     <i class="fas fa-list-ul"></i> Daftar Tugas
@@ -46,11 +51,8 @@
             </nav>
         </div>
 
-        <!-- Akun & Pengaturan (Bawah) -->
         <div class="mt-auto pt-6 border-t border-gray-100">
             <div class="text-[10px] font-bold text-gray-400 mb-4 tracking-widest uppercase">Akun & Pengaturan</div>
-            
-            <!-- Profil User -->
             <div class="flex items-center gap-3 px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl mb-4">
                 <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold text-sm">Z</div>
                 <div class="flex flex-col overflow-hidden">
@@ -58,18 +60,15 @@
                     <span class="text-[10px] text-gray-500">Administrator</span>
                 </div>
             </div>
-
-            <!-- Tombol Logout -->
             <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 rounded-xl transition text-sm font-medium">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
         </div>
     </aside>
 
-    <!-- KONTEN UTAMA KANAN -->
+    <!-- KONTEN UTAMA -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden w-full">
         
-        <!-- HEADER MOBILE (Hanya muncul di layar kecil) -->
         <header class="md:hidden bg-white border-b border-gray-100 p-4 flex items-center justify-between z-10 shadow-sm flex-shrink-0">
             <div class="flex items-center gap-2">
                 <div class="w-7 h-7 rounded-full bg-green-600 flex items-center justify-center text-white font-bold shadow-md">
@@ -82,10 +81,9 @@
             </button>
         </header>
 
-        <!-- AREA KONTEN -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 w-full">
             
-            <!-- Banner Hijau ala Zhenqi -->
+            <!-- Banner Hijau -->
             <div class="bg-[#4a9f60] rounded-3xl p-6 md:p-10 text-white mb-6 md:mb-8 relative overflow-hidden shadow-lg">
                 <div class="relative z-10 md:w-3/4">
                     <h1 class="text-2xl md:text-3xl font-bold mb-2 md:mb-3">Halo, Selamat Datang! 👋</h1>
@@ -96,7 +94,6 @@
                         <i class="fas fa-download"></i> Unduh Rekap Data
                     </button>
                 </div>
-                <!-- Elemen dekorasi daun di background banner -->
                 <div class="absolute -bottom-16 -right-10 opacity-20 pointer-events-none">
                     <i class="fas fa-leaf text-[10rem] md:text-[15rem]"></i>
                 </div>
@@ -104,12 +101,12 @@
 
             <h2 class="font-bold text-base md:text-lg mb-3 md:mb-4 text-gray-800">Kelola Layanan Hari Ini</h2>
 
-            <!-- Panel Kontrol (Filter & Form Tambah) -->
+            <!-- Panel Kontrol -->
             <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col xl:flex-row gap-4 xl:gap-6 items-start xl:items-center justify-between">
                 
-                <!-- Form Tambah Tugas -->
-                <form action="/add" method="POST" class="flex flex-col sm:flex-row flex-1 w-full gap-3">
-                    <input type="text" name="task" placeholder="Ketik tugas baru disini..." required 
+                <!-- Tambah id="add-task-form" disini -->
+                <form id="add-task-form" action="/add" method="POST" class="flex flex-col sm:flex-row flex-1 w-full gap-3">
+                    <input type="text" name="task" id="task-input" placeholder="Ketik tugas baru disini..." required 
                            class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 text-sm">
                     <div class="flex gap-3 w-full sm:w-auto">
                         <input type="date" name="date" required 
@@ -122,7 +119,6 @@
 
                 <div class="h-px w-full xl:w-px xl:h-10 bg-gray-200 my-2 xl:my-0"></div>
 
-                <!-- Form Filter Tanggal -->
                 <form method="GET" class="flex gap-2 items-center w-full sm:w-auto justify-between sm:justify-start">
                     <div class="flex items-center gap-2 flex-1 sm:flex-none">
                         <span class="text-sm text-gray-500 hidden md:inline-block">Filter:</span>
@@ -138,18 +134,17 @@
                 </form>
             </div>
 
-            <!-- Daftar Checklist -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+            <!-- CONTAINER LIST TUGAS -->
+            <div id="task-list-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
                 {% if tasks %}
                 <ul class="divide-y divide-gray-100">
                     {% for task in tasks %}
                     <li class="p-4 md:p-5 flex items-center justify-between hover:bg-gray-50 transition group">
                         <div class="flex items-center gap-3 md:gap-4 pr-3">
-                            <!-- Tombol Checklist -->
-                            <a href="/toggle/{{ task.id }}" class="text-xl md:text-2xl transition-transform active:scale-90 flex-shrink-0 {% if task.completed %}text-green-500{% else %}text-gray-200 hover:text-green-400{% endif %}">
+                            <!-- Tambah class async-action -->
+                            <a href="/toggle/{{ task.id }}" class="async-action text-xl md:text-2xl transition-transform active:scale-90 flex-shrink-0 {% if task.completed %}text-green-500{% else %}text-gray-200 hover:text-green-400{% endif %}">
                                 <i class="fa-{% if task.completed %}solid fa-circle-check{% else %}regular fa-circle{% endif %}"></i>
                             </a>
-                            <!-- Detail Tugas -->
                             <div class="flex flex-col">
                                 <span class="font-medium text-sm md:text-base {% if task.completed %}text-gray-400 line-through{% else %}text-gray-700{% endif %}">
                                     {{ task.task }}
@@ -159,15 +154,14 @@
                                 </span>
                             </div>
                         </div>
-                        <!-- Tombol Hapus (Selalu muncul di mobile, muncul saat hover di desktop) -->
-                        <a href="/delete/{{ task.id }}" class="text-gray-300 hover:text-red-500 bg-white hover:bg-red-50 p-2 md:p-2 rounded-lg transition opacity-100 md:opacity-0 md:group-hover:opacity-100 flex-shrink-0">
-                            <i class="fas fa-trash text-sm md:text-base"></i>
+                        <!-- Tambah class async-action dan action-delete -->
+                        <a href="/delete/{{ task.id }}" class="async-action action-delete text-gray-300 hover:text-red-500 bg-white hover:bg-red-50 p-2 md:p-2 rounded-lg transition opacity-100 md:opacity-0 md:group-hover:opacity-100 flex-shrink-0">
+                            <i class="fas fa-trash text-sm md:text-base pointer-events-none"></i>
                         </a>
                     </li>
                     {% endfor %}
                 </ul>
                 {% else %}
-                <!-- Kondisi Kosong (Empty State) -->
                 <div class="p-10 md:p-16 text-center text-gray-400 flex flex-col items-center">
                     <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 text-xl md:text-2xl">
                         <i class="fas fa-clipboard-list text-gray-300"></i>
@@ -180,22 +174,109 @@
         </main>
     </div>
 
-    <!-- JavaScript untuk interaksi Sidebar di Mobile -->
+    <!-- LOGIKA JAVASCRIPT -->
     <script>
+        // 1. Sidebar Mobile Logic
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const openMenuBtn = document.getElementById('openMenuBtn');
-        const closeMenuBtn = document.getElementById('closeMenuBtn');
-
-        function toggleMenu() {
+        const toggleMenu = () => {
             sidebar.classList.toggle('-translate-x-full');
             overlay.classList.toggle('hidden');
+        };
+        document.getElementById('openMenuBtn').addEventListener('click', toggleMenu);
+        document.getElementById('closeMenuBtn').addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // 2. SweetAlert2 Setup (Toast)
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // 3. Loader Logic
+        const loader = document.getElementById('loader');
+        const showLoader = () => loader.classList.remove('hidden', 'opacity-0');
+        const hideLoader = () => loader.classList.add('hidden');
+
+        // 4. Update UI Function (DOM Replacement Trik)
+        // Fungsi ini mengambil HTML yang baru dari respon, mengekstrak div list tugas, lalu menukarnya
+        async function refreshTaskList(response, successMsg) {
+            const htmlText = await response.text();
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(htmlText, 'text/html');
+            
+            const newContainer = newDoc.getElementById('task-list-container');
+            if (newContainer) {
+                document.getElementById('task-list-container').innerHTML = newContainer.innerHTML;
+            }
+            
+            Toast.fire({
+                icon: 'success',
+                title: successMsg
+            });
         }
 
-        // Event listeners untuk membuka/menutup menu
-        openMenuBtn.addEventListener('click', toggleMenu);
-        closeMenuBtn.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', toggleMenu);
+        // 5. Intercept Add Task Form
+        document.getElementById('add-task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoader();
+            
+            const formData = new FormData(e.target);
+            try {
+                // Fetch otomatis mengikuti redirect Flask dan mengambil halaman root ('/')
+                const response = await fetch(e.target.action, { method: 'POST', body: formData });
+                await refreshTaskList(response, 'Tugas baru berhasil ditambahkan!');
+                document.getElementById('task-input').value = ''; // Kosongkan input
+            } catch (error) {
+                Swal.fire('Error', 'Gagal menyambung ke server.', 'error');
+            } finally {
+                hideLoader();
+            }
+        });
+
+        // 6. Intercept Toggle & Delete actions
+        document.addEventListener('click', async (e) => {
+            // Cek apakah yang diklik adalah link action (toggle/hapus)
+            const actionLink = e.target.closest('.async-action');
+            if (!actionLink) return;
+            
+            e.preventDefault();
+            const url = actionLink.getAttribute('href');
+            const isDelete = actionLink.classList.contains('action-delete');
+
+            // Konfirmasi khusus untuk Hapus
+            if (isDelete) {
+                const result = await Swal.fire({
+                    title: 'Hapus Tugas?',
+                    text: "Data yang dihapus tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#9ca3af',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                });
+                if (!result.isConfirmed) return;
+            }
+
+            showLoader();
+            try {
+                const response = await fetch(url);
+                const msg = isDelete ? 'Tugas berhasil dihapus!' : 'Status tugas diperbarui!';
+                await refreshTaskList(response, msg);
+            } catch (error) {
+                Swal.fire('Error', 'Terjadi kesalahan saat memproses data.', 'error');
+            } finally {
+                hideLoader();
+            }
+        });
     </script>
 </body>
 </html>
